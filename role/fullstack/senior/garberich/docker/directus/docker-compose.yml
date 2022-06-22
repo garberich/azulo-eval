@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: "airportart"
+      MYSQL_USER: "airportart_user"
+      MYSQL_PASSWORD: "airportart_user_pass"
+      MYSQL_ROOT_PASSWORD: "airportart_root_pass"
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - airportart_network
+
+  directus:
+    container_name: directus
+    image: directus/directus:latest
+    ports:
+      - 8055:8055
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      KEY: '255d861b-5ea1-5996-9aa3-922530ec40b1'
+      SECRET: '6116487b-cda1-52c2-b5b5-c8022c45e263'
+
+      DB_CLIENT: 'mysql'
+      DB_HOST: 'host.docker.internal' # Host name of the DB container, using host.docker.internal, you can use container name
+      DB_PORT: '3306' # port on which DB Container is listening
+      DB_DATABASE: 'airportart'
+      DB_USER: 'airportart_user'
+      DB_PASSWORD: 'airportart_user_pass'
+
+      ADMIN_EMAIL: 'admin@admin.com' #used for Login for Directus UI
+      ADMIN_PASSWORD: 'admin'
+    volumes:
+      - ./uploads:/directus/uploads    
+    networks:
+      - airportart_network
+networks:
+  airportart_network:

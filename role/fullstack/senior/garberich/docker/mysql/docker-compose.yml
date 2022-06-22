@@ -1,0 +1,23 @@
+version: '3.7'
+services:
+  mysql:
+    container_name: mysql
+    restart: always
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: "airportart_pass"
+      MYSQL_DATABASE: "airportart"
+      MYSQL_USER: "airportart_user"
+      MYSQL_PASSWORD: "userpw"
+    ports:
+      - 3306:3306
+    volumes:
+      - ./schemas:/var/lib/mysql:rw
+    networks:
+      - airportart_network
+volumes:
+  schemas: {}
+networks:
+  airportart_network:
+    name: airportart_net
+    driver: bridge
