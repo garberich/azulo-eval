@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=P@ssw0rd
+      - MYSQL_DATABASE=airportart
+      - MYSQL_USER=airportart_user
+      - MYSQL_PASSWORD=airportart_user_pass
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - airportart_network
+  flyway:
+    image: flyway/flyway:7.15.0
+    command: -url=jdbc:mysql://db -schemas=airportart -user=root -password=P@ssw0rd -connectRetries=60 migrate
+    volumes:
+      - ./migrations:/flyway/sql
+    depends_on:
+      - db
+    networks:
+      - airportart_network
+  directus:
+    container_name: directus
+    image: directus/directus:latest
+    ports:
+      - 8055:8055
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      KEY: '255d861b-5ea1-5996-9aa3-922530ec40b1'
+      SECRET: '6116487b-cda1-52c2-b5b5-c8022c45e263'
+
+      DB_CLIENT: 'mysql'
+      DB_HOST: 'host.docker.internal' # Host name of the DB container, using host.docker.internal, you can use container name
+      DB_PORT: '3306' # port on which DB Container is listening
+      DB_DATABASE: 'airportart'
+      DB_USER: 'airportart_user'
+      DB_PASSWORD: 'airportart_user_pass'
+
+      ADMIN_EMAIL: 'admin@admin.com' #used for Login for Directus UI
+      ADMIN_PASSWORD: 'admin'
+
+      CORS_ORIGIN: "true"
+      CORS_METHODS: "GET,POST,PATCH,DELETE"
+      CORS_ENABLED: "true"
+    volumes:
+      - ./uploads:/directus/uploads    
+    networks:
+      - airportart_network
+networks:
+  airportart_network:
