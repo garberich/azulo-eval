@@ -1,20 +1,20 @@
 CREATE TABLE Location (
-    Id INT,
+    Id INT AUTO_INCREMENT,
     Country VARCHAR(50),
-    ProvinceOrState DECIMAL(10,2),
+    ProvinceOrState VARCHAR(5),
     Longitude VARCHAR(10),
     Latitude VARCHAR(10),
     PRIMARY KEY (Id)
 );
 
 CREATE TABLE AirportOperator (
-    Id INT,
+    Id INT AUTO_INCREMENT,
     Name VARCHAR(100),
     PRIMARY KEY (Id)
 );
 
 CREATE TABLE Airport (
-    Id INT,
+    Id INT AUTO_INCREMENT,
     Name VARCHAR(100),
     AirportOperatorId INT,
     AirportCode VARCHAR(10),

@@ -5,3 +5,6 @@
 
 ## Directus
 /docker/directus/uploads
+
+## Backend
+/airportart-api/node_modules
