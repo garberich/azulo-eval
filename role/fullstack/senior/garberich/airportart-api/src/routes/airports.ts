@@ -24,4 +24,30 @@ router.post('/move/:idairport/:idoperator', async (req, res) => {
     }
 })
 
+router.post('/change_order', async(req, res) => {
+    try {
+        for (let i = 0; i < req.body.length; i++) {
+            const airportId = req.body[i].airportId
+            const priorityOrder = req.body[i].priorityOrder
+    
+            // Obtenemos el aeropuerto que tiene actualmente el orden a asignar
+            const actualAirportId = await airportService.getIdAirportByOrder(priorityOrder)
+            if(actualAirportId == null) throw new Error(`No se encuentra un aeropuerto con la prioridad ${priorityOrder}`)
+            
+            // Obtenemos el orden que tiene actualmente el aeropuerto a actualizar
+            const actualOrder = await airportService.getOrderById(airportId) 
+            if(actualOrder == null) throw new Error(`No se encuentra una prioridad para el aeropuerto ${airportId}`)
+            
+            airportService.updateOrder(Number(airportId), Number(priorityOrder))
+            airportService.updateOrder(Number(actualAirportId), Number(actualOrder)) 
+        }
+
+        return res.status(200).send("Prioridad actualizada")
+        
+    } catch (e: any) {
+        return res.status(404).send(e.message)
+    }
+    
+})
+
 export default router

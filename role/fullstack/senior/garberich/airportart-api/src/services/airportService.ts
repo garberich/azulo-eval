@@ -39,3 +39,43 @@ export const findById = async(id: number): Promise<Airport | undefined> => {
         })
     })
 }
+
+export const getIdAirportByOrder = async(id: number): Promise<number | undefined> => {
+    const sql = `select Id from Airport where PriorityOrder = ${id}`
+    return new Promise((resolve, reject) => {
+        conector.query(sql, function (err, result){
+            if(err) reject(err);
+
+            if(result.length){
+                let resultId = Number(JSON.stringify(result[0].Id))
+                resolve(resultId)
+            }
+            else resolve(undefined)
+        })
+    })
+}
+
+export const getOrderById = async(id: number): Promise<number | undefined> => {
+    const sql = `select PriorityOrder from Airport where Id = ${id}`
+    return new Promise((resolve, reject) => {
+        conector.query(sql, function (err, result){
+            if(err) reject(err);
+
+            if(result.length){
+                let resultOrder = Number(JSON.stringify(result[0].PriorityOrder))
+                resolve(resultOrder)
+            }
+            else resolve(undefined)
+        })
+    })
+}
+
+export const updateOrder = (idAirport: number, priority: number) => {
+    const sql = `update Airport SET PriorityOrder = ${priority} Where Id = ${idAirport}`
+    conector.query(sql, function(err, result){
+        if(err) throw err
+        // console.log(result)
+
+        return(result)
+    })
+}
